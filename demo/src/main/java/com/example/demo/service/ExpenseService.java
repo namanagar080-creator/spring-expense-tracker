@@ -13,6 +13,7 @@ public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
 
+    // Spring injects the repository so the service can talk to the database.
     public ExpenseService(ExpenseRepository expenseRepository) {
         this.expenseRepository = expenseRepository;
     }
@@ -32,6 +33,19 @@ public class ExpenseService {
 
     public Expense createExpense(Expense expense) {
         return expenseRepository.save(expense);
+    }
+
+    // Find the existing row first, update only the editable fields, then save it back.
+    public Expense updateExpenseById(Long id, Expense updatedExpense) {
+        Expense existingExpense = expenseRepository.findById(id)
+                .orElseThrow(() -> new ExpenseNotFoundException(id));
+
+        // Copy the new values into the managed entity.
+        existingExpense.setTitle(updatedExpense.getTitle());
+        existingExpense.setAmount(updatedExpense.getAmount());
+
+        // save(...) persists the changes and returns the latest database state.
+        return expenseRepository.save(existingExpense);
     }
 
     public void deleteExpenseById(Long id) {

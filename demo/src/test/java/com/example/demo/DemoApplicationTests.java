@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import com.example.demo.entity.Expense;
+import com.example.demo.exception.ExpenseNotFoundException;
 import com.example.demo.repository.ExpenseRepository;
 import com.example.demo.service.ExpenseService;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
@@ -54,6 +56,26 @@ class DemoApplicationTests {
 		assertFalse(savedExpense.getId() == null);
 		assertEquals("Books", savedExpense.getTitle());
 		assertEquals(750.0, savedExpense.getAmount());
+	}
+
+	@Test
+	void updateExpenseChangesTitleAndAmount() {
+		Expense savedExpense = expenseRepository.save(new Expense("Snacks", 150));
+		Expense updatedExpense = new Expense("Groceries", 950);
+
+		Expense result = expenseService.updateExpenseById(savedExpense.getId(), updatedExpense);
+
+		assertEquals(savedExpense.getId(), result.getId());
+		assertEquals("Groceries", result.getTitle());
+		assertEquals(950.0, result.getAmount());
+	}
+
+	@Test
+	void updateExpenseThrowsWhenExpenseDoesNotExist() {
+		Expense updatedExpense = new Expense("Groceries", 950);
+
+		assertThrows(ExpenseNotFoundException.class,
+				() -> expenseService.updateExpenseById(999L, updatedExpense));
 	}
 
 	@Test

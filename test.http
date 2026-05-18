@@ -1,1 +1,21 @@
 GET http://localhost:8080/expenses
+
+###
+
+POST http://localhost:8080/expenses
+Content-Type: application/json
+
+{
+  "title": "Books",
+  "amount": 799.0
+}
+
+###
+
+PUT http://localhost:8080/expenses/1
+Content-Type: application/json
+
+{
+  "title": "Groceries",
+  "amount": 950.0
+}

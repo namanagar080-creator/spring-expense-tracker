@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -38,12 +39,20 @@ public class ExpenseController {
         return expenseService.createExpense(expense);
     }
 
+    // PUT updates an existing expense using the id from the URL.
+    @PutMapping("/{id}")
+    public Expense updateExpense(@PathVariable Long id, @RequestBody Expense expense) {
+        // The service handles the business logic and throws an exception if the id is missing.
+        return expenseService.updateExpenseById(id, expense);
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteExpense(@PathVariable Long id) {
         expenseService.deleteExpenseById(id);
     }
 
+    // Convert the custom exception into a clean 404 response for the API client.
     @ExceptionHandler(ExpenseNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleExpenseNotFound(ExpenseNotFoundException exception) {
